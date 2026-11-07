@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Trash: Interdimensional Debris Clearer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: radial-gradient(circle at center, #0f172a, #020617);
+            color: #f8fafc;
+            user-select: none;
+        }
+        .canvas-container {
+            position: relative;
+            box-shadow: 0 0 35px rgba(139, 92, 246, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.2);
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-text-cyan {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.8), 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+        .glow-text-purple {
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8b5cf6;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-2 md:p-6 overflow-x-hidden">
+
+    <!-- Header & Brand -->
+    <header class="w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 mb-4 glass-panel p-4 rounded-2xl">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30">
+                <i class="fa-solid font-black fa-atom text-white animate-spin-slow"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl md:text-3xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-indigo-400">
+                    QUANTUM TRASH
+                </h1>
+                <p class="text-xs text-slate-400">Interdimensional Debris Clearer • เกม Tetris สลับแรงโน้มถ่วงมิติ</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <!-- Volume Control Slider -->
+            <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700">
+                <i id="audioIcon" class="fa-solid fa-volume-high text-amber-400 text-sm"></i>
+                <input id="volumeSlider" type="range" min="0" max="1" step="0.05" value="0.85" class="w-16 sm:w-24 accent-pink-500 cursor-pointer">
+            </div>
+            <!-- Pause Button -->
+            <button id="btnPauseGame" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 text-sm font-semibold transition flex items-center gap-1.5">
+                <i id="pauseIcon" class="fa-solid fa-pause"></i> <span id="pauseText" class="hidden sm:inline">พักเกม</span>
+            </button>
+            <button id="btnGddModal" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 text-sm font-semibold transition flex items-center gap-2">
+                <i class="fa-solid fa-book-open"></i> เอกสารแนวคิด (GDD)
+            </button>
+            <button id="btnFeedbackModal" class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-sm font-semibold shadow-lg shadow-purple-600/30 transition flex items-center gap-2">
+                <i class="fa-solid fa-comments"></i> แบบประเมินผู้เล่น
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start flex-1">
+        
+        <!-- Left Panel: Stats -->
+        <div class="lg:col-span-3 space-y-4 order-2 lg:order-1">
+            <!-- Game Score Panel -->
+            <div class="glass-panel p-5 rounded-2xl space-y-4">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-chart-simple text-cyan-400"></i> สถานะการส่งขยะมิติ
+                </h2>
+                <div>
+                    <span class="text-xs text-slate-400 block">คะแนนสะสม (Score)</span>
+                    <span id="scoreDisplay" class="text-3xl font-black text-cyan-400 glow-text-cyan">0</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-700/50">
+                    <div>
+                        <span class="text-xs text-slate-400 block">เลเวลมิติ</span>
+                        <span id="levelDisplay" class="text-xl font-bold text-slate-200">1</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 block">เคลียร์แถว</span>
+                        <span id="linesDisplay" class="text-xl font-bold text-slate-200">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quantum Ability Panel -->
+            <div class="glass-panel p-5 rounded-2xl space-y-3">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-pink-400"></i> สกิลควอนตัม (Quantum Skill)
+                </span>
+                <button id="btnSkillNuke" class="w-full p-3 rounded-xl bg-gradient-to-r from-red-600/80 to-amber-600/80 hover:from-red-500 hover:to-amber-500 text-white font-bold text-sm shadow-md transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-between">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-bomb"></i> ระเบิดมิติ (Black Hole)</span>
+                    <span id="skillCost" class="text-xs bg-slate-900/60 px-2 py-1 rounded text-amber-300">500 pts</span>
+                </button>
+                <p class="text-[11px] text-slate-400">ใช้ 500 คะแนนเพื่อลบบล็อกโซนล่างสุด 3 แถวทันที</p>
+            </div>
+        </div>
+
+        <!-- Center Panel: Tetris Board Canvas -->
+        <div class="lg:col-span-6 flex flex-col items-center order-1 lg:order-2">
+            <div class="canvas-container rounded-2xl overflow-hidden border-2 border-indigo-500/40 bg-slate-950 p-2 relative">
+                <!-- Canvas -->
+                <canvas id="tetrisCanvas" width="300" height="600" class="rounded-xl block"></canvas>
+
+                <!-- Overlay Screens (Start / Pause / Game Over) -->
+                <div id="overlayScreen" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-10 transition-all duration-300">
+                    <div id="startState" class="space-y-4">
+                        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center text-4xl text-white shadow-xl shadow-purple-500/40 animate-bounce">
+                            <i class="fa-solid fa-cubes-stacked"></i>
+                        </div>
+                        <h2 class="text-2xl font-black text-white tracking-wide">QUANTUM TRASH</h2>
+                        <p class="text-xs text-slate-300 max-w-xs mx-auto">
+                            จัดสรรขยะมิติท่ามกลางเสียงเพลงและความสนุก! อย่าให้ขยะสูงจนล้นขอบสนาม
+                        </p>
+                        <button id="btnStartGame" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-base shadow-lg shadow-cyan-500/40 transform hover:scale-105 transition">
+                            <i class="fa-solid fa-play mr-2"></i> เริ่มเล่นเกม
+                        </button>
+                    </div>
+
+                    <!-- Pause State Overlay -->
+                    <div id="pauseState" class="hidden space-y-4">
+                        <div class="w-16 h-16 mx-auto rounded-full bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center text-3xl text-cyan-400">
+                            <i class="fa-solid fa-pause"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-cyan-400 glow-text-cyan">PAUSED</h2>
+                        <p class="text-xs text-slate-300">พักเกมชั่วคราว กดปุ่มด้านล่างเพื่อเล่นต่อ</p>
+                        <button id="btnResumeGame" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-base shadow-lg shadow-cyan-500/40 transform hover:scale-105 transition">
+                            <i class="fa-solid fa-play mr-2"></i> เล่นต่อ (Resume)
+                        </button>
+                    </div>
+
+                    <div id="gameOverState" class="hidden space-y-4">
+                        <div class="w-16 h-16 mx-auto rounded-full bg-red-500/20 border-2 border-red-500 flex items-center justify-center text-3xl text-red-500">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-red-400 glow-text-red">GAME OVER!</h2>
+                        <p class="text-sm text-slate-300">ขยะมิติทะลักล้นขอบสนาม!</p>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 text-left space-y-1">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">คะแนนสุทธิ:</span>
+                                <span id="finalScore" class="font-bold text-cyan-400">0</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">เคลียร์แถวขยะ:</span>
+                                <span id="finalLines" class="font-bold text-purple-400">0</span>
+                            </div>
+                        </div>
+                        <button id="btnRestartGame" class="px-8 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-base shadow-lg shadow-purple-600/30 transform hover:scale-105 transition">
+                            <i class="fa-solid fa-rotate-right mr-2"></i> เล่นใหม่อีกครั้ง
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Controls -->
+            <div class="w-full max-w-[320px] grid grid-cols-4 gap-2 mt-4 lg:hidden">
+                <button id="btnMobileLeft" class="p-4 bg-slate-800 active:bg-indigo-600 rounded-xl text-xl text-white font-bold flex items-center justify-center border border-slate-700">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <button id="btnMobileRotate" class="p-4 bg-slate-800 active:bg-indigo-600 rounded-xl text-xl text-cyan-400 font-bold flex items-center justify-center border border-slate-700">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+                <button id="btnMobileRight" class="p-4 bg-slate-800 active:bg-indigo-600 rounded-xl text-xl text-white font-bold flex items-center justify-center border border-slate-700">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <button id="btnMobileDrop" class="p-4 bg-purple-700 active:bg-purple-600 rounded-xl text-xl text-white font-bold flex items-center justify-center border border-purple-500">
+                    <i class="fa-solid fa-angles-down"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Panel: Next Piece & Hold Piece -->
+        <div class="lg:col-span-3 space-y-4 order-3">
+            <!-- Next Piece -->
+            <div class="glass-panel p-5 rounded-2xl flex flex-col items-center">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2 self-start">
+                    <i class="fa-solid fa-forward text-cyan-400"></i> ชิ้นส่วนถัดไป (Next)
+                </h3>
+                <canvas id="nextCanvas" width="120" height="120" class="bg-slate-950/60 rounded-xl border border-slate-800"></canvas>
+            </div>
+
+            <!-- Special Blocks Guide -->
+            <div class="glass-panel p-5 rounded-2xl space-y-3">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-cubes text-amber-400"></i> คลังบล็อกพิเศษ (ลุ้นออกบ่อย!)
+                </h3>
+                <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 rounded bg-cyan-400 shadow shadow-cyan-400/50 flex flex-shrink-0 items-center justify-center text-[10px]">⚡</span>
+                        <span><b>Laser Block:</b> ยิงเลเซอร์ทำลายทั้งแถวนอน+ตั้ง</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 rounded bg-blue-300 shadow shadow-blue-300/50 flex flex-shrink-0 items-center justify-center text-[10px]">❄️</span>
+                        <span><b>Freeze Block:</b> แช่แข็งชะลอความเร็วตก 5 วินาที</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 rounded bg-amber-400 shadow shadow-amber-400/50 flex flex-shrink-0 items-center justify-center text-[10px]">💣</span>
+                        <span><b>Bomb Block:</b> ระเบิดขยะ 3x3 ช่องรอบตัว</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 rounded bg-emerald-400 shadow shadow-emerald-400/50 flex flex-shrink-0 items-center justify-center text-[10px]">⚓</span>
+                        <span><b>Weight Block:</b> บล็อกยักษ์ทะลวงทะลุพื้น</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Controls Info -->
+            <div class="glass-panel p-5 rounded-2xl space-y-2 hidden lg:block text-xs text-slate-400">
+                <h3 class="font-bold text-slate-300 uppercase tracking-wider mb-2">การควบคุม (Keyboard)</h3>
+                <div class="flex justify-between"><span>เลื่อนซ้าย / ขวา</span> <span class="font-mono text-cyan-300">← / →</span></div>
+                <div class="flex justify-between"><span>หมุนชิ้นส่วน</span> <span class="font-mono text-cyan-300">↑ หรือ Z</span></div>
+                <div class="flex justify-between"><span>เร่งความเร็วตก</span> <span class="font-mono text-cyan-300">↓</span></div>
+                <div class="flex justify-between"><span>ทิ้งบล็อกทันที (Hard Drop)</span> <span class="font-mono text-cyan-300">Spacebar</span></div>
+                <div class="flex justify-between"><span>พักเกม / เล่นต่อ</span> <span class="font-mono text-cyan-300">P / ESC</span></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-6xl mx-auto mt-6 text-center text-xs text-slate-500 py-3 border-t border-slate-800">
+        <p>© 2026 Quantum Trash Project • พัฒนาสำหรับโปรเจกต์เว็บแอปพลิเคชันเชิงนวัตกรรม</p>
+    </footer>
+
+    <!-- MODAL 1: Game Design Document (GDD) -->
+    <div id="modalGdd" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-3xl max-h-[85vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-950/50">
+                <h3 class="text-xl font-extrabold text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-file-code"></i> รายละเอียดแนวคิดเกม (GDD Proposal)
+                </h3>
+                <button id="btnCloseGdd" class="text-slate-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6 text-sm text-slate-300">
+                <!-- Section 1 -->
+                <section class="space-y-2">
+                    <h4 class="text-base font-bold text-purple-400 flex items-center gap-2">
+                        <i class="fa-solid fa-gamepad"></i> 1. ชื่อเกม (Game Title)
+                    </h4>
+                    <p class="pl-4 border-l-2 border-purple-500">
+                        <strong class="text-white text-base">Quantum Trash: Interdimensional Debris Clearer</strong><br>
+                        (ชื่อภาษาไทย: <em>"พนักงานเทศบาลข้ามมิติ: เรียงขยะควอนตัม"</em>)
+                    </p>
+                </section>
+
+                <!-- Section 2 -->
+                <section class="space-y-2">
+                    <h4 class="text-base font-bold text-purple-400 flex items-center gap-2">
+                        <i class="fa-solid fa-book text-pink-400"></i> 2. ตีมและเรื่องราว (Theme & Lore)
+                    </h4>
+                    <div class="pl-4 border-l-2 border-pink-500 space-y-2">
+                        <p>
+                            ในยุคอนาคตปี 3042 อารยธรรมต่างๆ ในจักรวาลได้ทิ้งขยะมิติ (Quantum Debris) ลงในรอยแยกห้วงเวลา คุณได้รับบทเป็น <strong>"เจ้าหน้าที่จัดเก็บขยะควอนตัม"</strong> มีหน้าที่จัดเรียงและบีบอัดขยะมิติผ่านประตูสลายสสารท่ามกลางเสียงดนตรีจังหวะเร้าใจ!
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Section 3 -->
+                <section class="space-y-2">
+                    <h4 class="text-base font-bold text-purple-400 flex items-center gap-2">
+                        <i class="fa-solid fa-gears text-cyan-400"></i> 3. กลไกพิเศษ (Special Mechanics)
+                    </h4>
+                    <ul class="pl-4 border-l-2 border-cyan-500 space-y-2 list-disc list-inside">
+                        <li><strong>Quantum Special Blocks (บล็อกเอฟเฟกต์มิติ):</strong>
+                            <ul class="pl-6 list-circle text-slate-400 space-y-1 mt-1">
+                                <li>💥 <i>Bomb Block:</i> ทำลายบล็อกรอบข้าง 3x3 ช่อง</li>
+                                <li>⚓ <i>Weight Block:</i> บล็อกที่มีน้ำหนักมหาศาล เจาะทะลุบล็อกด้านล่างลงไปทันที</li>
+                            </ul>
+                        </li>
+                        <li><strong>Black Hole Skill:</strong> ใช้ 500 คะแนนในการกดใช้ระเบิดหลุมดำล้าง 3 แถวล่างสุด</li>
+                        <li><strong>Audio Synthesizer:</strong> เพลงประกอบ 8-bit retro สดใส และเอฟเฟกต์เสียงฉลองเมื่อชนะ combo</li>
+                    </ul>
+                </section>
+            </div>
+            <div class="p-4 border-t border-slate-800 bg-slate-950/50 flex justify-end">
+                <button id="btnCloseGdd2" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Feedback Form & Community Reviews -->
+    <div id="modalFeedback" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-2xl max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl">
+            <!-- Tabs Header -->
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950/60">
+                <div class="flex gap-2">
+                    <button id="tabBtnForm" class="px-4 py-2 rounded-xl text-sm font-bold bg-pink-600 text-white transition">
+                        <i class="fa-solid fa-pen-to-square mr-1"></i> เขียนแบบประเมิน
+                    </button>
+                    <button id="tabBtnCommunity" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+                        <i class="fa-solid fa-users mr-1"></i> ดูผลประเมินของผู้เล่นอื่น (<span id="reviewCount">3</span>)
+                    </button>
+                </div>
+                <button id="btnCloseFeedback" class="text-slate-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Tab 1: Form -->
+            <form id="feedbackForm" class="p-6 overflow-y-auto space-y-5 text-sm text-slate-300">
+                <div class="space-y-2">
+                    <label class="block font-bold text-slate-200" for="reviewerName">
+                        ชื่อผู้ประเมิน / ชื่อในเกม
+                    </label>
+                    <input type="text" id="reviewerName" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:border-purple-500 placeholder-slate-600" placeholder="เช่น SpaceCadet99">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block font-bold text-slate-200">
+                        1. ความพึงพอใจต่อเกมและระบบเพลง/การเล่น (คะแนน 1-5 ดาว)
+                    </label>
+                    <div class="flex gap-4 items-center justify-center py-2 bg-slate-950/50 rounded-xl border border-slate-800">
+                        <div id="ratingStars" class="flex gap-3 text-2xl text-slate-600 cursor-pointer">
+                            <i class="fa-solid fa-star hover:text-amber-400 transition" data-rating="1"></i>
+                            <i class="fa-solid fa-star hover:text-amber-400 transition" data-rating="2"></i>
+                            <i class="fa-solid fa-star hover:text-amber-400 transition" data-rating="3"></i>
+                            <i class="fa-solid fa-star hover:text-amber-400 transition" data-rating="4"></i>
+                            <i class="fa-solid fa-star hover:text-amber-400 transition" data-rating="5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block font-bold text-slate-200" for="qLikes">
+                        2. สิ่งที่คุณ "ชอบมากที่สุด" ในเกมนี้? (เช่น เพลงประกอบสนุก, บล็อกระเบิด, เล่นเพลิน)
+                    </label>
+                    <textarea id="qLikes" rows="2" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:border-purple-500 placeholder-slate-600" placeholder="ระบุสิ่งที่ชอบ..."></textarea>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block font-bold text-slate-200" for="qImprovements">
+                        3. สิ่งที่คุณคิดว่าควร "ปรับปรุงหรือเพิ่มเติม"?
+                    </label>
+                    <textarea id="qImprovements" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:border-purple-500 placeholder-slate-600" placeholder="ข้อเสนอแนะเพิ่มเติม..."></textarea>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-bold text-base shadow-lg shadow-pink-500/30 transition">
+                        ส่งแบบประเมินและดูความเห็นคนอื่น
+                    </button>
+                </div>
+            </form>
+
+            <!-- Tab 2: Community Reviews List -->
+            <div id="communityView" class="hidden p-6 overflow-y-auto space-y-4 text-sm text-slate-300">
+                <!-- Rating Summary Box -->
+                <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-slate-400 block">คะแนนเฉลี่ยจากผู้เล่น</span>
+                        <div class="flex items-center gap-2">
+                            <span id="avgRatingNum" class="text-3xl font-black text-amber-400">4.7</span>
+                            <div id="avgStars" class="text-amber-400 text-sm">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400">ผู้ประเมินทั้งหมด</span>
+                        <div id="totalReviewsCount" class="text-xl font-bold text-purple-400">3 คน</div>
+                    </div>
+                </div>
+
+                <!-- Reviews Container -->
+                <div id="reviewsList" class="space-y-3">
+                    <!-- Dynamic Items will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Game Logic -->
+    <script>
+        // --- Web Audio Synthesizer (Multi-Track Dynamic Jukebox Engine) ---
+        class AudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.bgmTimer = null;
+                this.volume = 0.85; // Standard high volume
+                this.step = 0;
+                this.currentTrackIndex = 0;
+                this.trackStepCount = 0;
+                this.beatsPerTrackChange = 32; // Switch melody track every 32 beats (approx 15-20 seconds)
+
+                // Track 1: High-Energy Synthwave (Track A)
+                this.trackA = [
+                    523.25, 659.25, 783.99, 1046.50, 783.99, 659.25, 523.25, 659.25,
+                    587.33, 698.46, 880.00, 1174.66, 880.00, 698.46, 587.33, 698.46,
+                    659.25, 783.99, 987.77, 1318.51, 987.77, 783.99, 659.25, 783.99,
+                    698.46, 880.00, 1046.50, 1396.91, 1046.50, 880.00, 783.99, 659.25
+                ];
+
+                // Track 2: Cosmic Arpeggio Blitz (Track B)
+                this.trackB = [
+                    440.00, 554.37, 659.25, 880.00, 659.25, 554.37, 440.00, 554.37,
+                    392.00, 493.88, 587.33, 783.99, 587.33, 493.88, 392.00, 493.88,
+                    349.23, 440.00, 523.25, 698.46, 523.25, 440.00, 349.23, 440.00,
+                    329.63, 415.30, 493.88, 659.25, 493.88, 415.30, 329.63, 415.30
+                ];
+
+                // Track 3: Cyberpunk Battle Beat (Track C)
+                this.trackC = [
+                    587.33, 783.99, 880.00, 1174.66, 880.00, 783.99, 587.33, 880.00,
+                    659.25, 880.00, 987.77, 1318.51, 987.77, 880.00, 659.25, 987.77,
+                    698.46, 987.77, 1046.50, 1396.91, 1046.50, 987.77, 698.46, 1046.50,
+                    783.99, 1046.50, 1174.66, 1567.98, 1174.66, 1046.50, 783.99, 1174.66
+                ];
+
+                this.tracks = [this.trackA, this.trackB, this.trackC];
+                this.basslines = [
+                    [130.81, 130.81, 164.81, 130.81, 146.83, 146.83, 174.61, 146.83],
+                    [110.00, 110.00, 138.59, 110.00, 98.00, 98.00, 123.47, 98.00],
+                    [146.83, 146.83, 196.00, 146.83, 164.81, 164.81, 220.00, 164.81]
+                ];
+            }
+
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playTone(freq, type, duration, startVol = 0.1) {
+                if (!this.ctx || this.volume <= 0) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    const finalVol = startVol * this.volume;
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(finalVol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch (e) {}
+            }
+
+            startBGM() {
+                this.init();
+                if (this.bgmTimer) clearInterval(this.bgmTimer);
+                this.step = 0;
+                this.trackStepCount = 0;
+                this.currentTrackIndex = 0;
+
+                // High energy tempo loop (125ms per beat)
+                this.bgmTimer = setInterval(() => {
+                    if (this.volume <= 0) return;
+
+                    const activeMelody = this.tracks[this.currentTrackIndex];
+                    const activeBass = this.basslines[this.currentTrackIndex];
+
+                    const note = activeMelody[this.step % activeMelody.length];
+                    const bassNote = activeBass[Math.floor(this.step / 2) % activeBass.length];
+                    
+                    this.playTone(note, 'sawtooth', 0.1, 0.05);
+                    this.playTone(bassNote, 'triangle', 0.15, 0.09); // Driving bassline
+                    
+                    if (this.step % 4 === 0) {
+                        this.playTone(100, 'square', 0.08, 0.12); // Kick/Snare pulse
+                    }
+
+                    this.step++;
+                    this.trackStepCount++;
+
+                    // Automatically switch to the next track after playing a segment
+                    if (this.trackStepCount >= this.beatsPerTrackChange) {
+                        this.trackStepCount = 0;
+                        this.currentTrackIndex = (this.currentTrackIndex + 1) % this.tracks.length;
+                    }
+                }, 125);
+            }
+
+            stopBGM() {
+                if (this.bgmTimer) {
+                    clearInterval(this.bgmTimer);
+                    this.bgmTimer = null;
+                }
+            }
+
+            rotate() { this.playTone(587.33, 'sine', 0.07, 0.08); }
+            move() { this.playTone(330, 'triangle', 0.04, 0.05); }
+            
+            land() {
+                this.playTone(200, 'sawtooth', 0.1, 0.2);
+                setTimeout(() => this.playTone(110, 'triangle', 0.15, 0.25), 25);
+            }
+
+            laserSound() {
+                this.playTone(880, 'sawtooth', 0.2, 0.2);
+                setTimeout(() => this.playTone(440, 'sawtooth', 0.2, 0.15), 50);
+            }
+
+            freezeSound() {
+                this.playTone(1200, 'sine', 0.25, 0.15);
+                setTimeout(() => this.playTone(1500, 'sine', 0.3, 0.15), 80);
+            }
+
+            clear() { 
+                this.playTone(659.25, 'sine', 0.1, 0.12); 
+                setTimeout(() => this.playTone(783.99, 'sine', 0.12, 0.12), 60);
+                setTimeout(() => this.playTone(1046.50, 'sine', 0.18, 0.15), 120);
+            }
+
+            victory() {
+                const notes = [659.25, 783.99, 1046.50, 1318.51, 1046.50, 1318.51];
+                notes.forEach((freq, idx) => {
+                    setTimeout(() => this.playTone(freq, 'triangle', 0.22, 0.2), idx * 85);
+                });
+            }
+
+            bomb() {
+                this.playTone(90, 'sawtooth', 0.35, 0.3);
+            }
+
+            gameOver() {
+                this.stopBGM();
+                this.playTone(350, 'sawtooth', 0.2, 0.15);
+                setTimeout(() => this.playTone(220, 'sawtooth', 0.3, 0.18), 180);
+                setTimeout(() => this.playTone(110, 'sawtooth', 0.5, 0.25), 360);
+            }
+        }
+
+        const audio = new AudioEngine();
+
+        // Volume Slider Control
+        const volumeSlider = document.getElementById('volumeSlider');
+        const audioIcon = document.getElementById('audioIcon');
+
+        volumeSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            audio.volume = val;
+            if (val === 0) {
+                audioIcon.className = 'fa-solid fa-volume-xmark text-slate-500 text-sm';
+            } else if (val < 0.5) {
+                audioIcon.className = 'fa-solid fa-volume-low text-amber-400 text-sm';
+            } else {
+                audioIcon.className = 'fa-solid fa-volume-high text-amber-400 text-sm';
+            }
+        });
+
+        // --- Tetris Constants & Game State ---
+        const COLS = 10;
+        const ROWS = 20;
+        const BLOCK_SIZE = 30;
+
+        const SHAPES = {
+            'I': { matrix: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], color: '#06b6d4' },
+            'J': { matrix: [[1,0,0],[1,1,1],[0,0,0]], color: '#3b82f6' },
+            'L': { matrix: [[0,0,1],[1,1,1],[0,0,0]], color: '#f97316' },
+            'O': { matrix: [[1,1],[1,1]], color: '#eab308' },
+            'S': { matrix: [[0,1,1],[1,1,0],[0,0,0]], color: '#22c55e' },
+            'T': { matrix: [[0,1,0],[1,1,1],[0,0,0]], color: '#a855f7' },
+            'Z': { matrix: [[1,1,0],[0,1,1],[0,0,0]], color: '#ef4444' },
+            'BOMB': { matrix: [[1]], color: '#f59e0b', type: 'BOMB' },
+            'WEIGHT': { matrix: [[1,1],[1,1]], color: '#10b981', type: 'WEIGHT' },
+            'LASER': { matrix: [[1]], color: '#38bdf8', type: 'LASER' },
+            'FREEZE': { matrix: [[1]], color: '#93c5fd', type: 'FREEZE' }
+        };
+
+        // Standard Shapes + Frequent Special Blocks
+        const SHAPE_KEYS = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
+        const SPECIAL_KEYS = ['BOMB', 'WEIGHT', 'LASER', 'FREEZE'];
+
+        const canvas = document.getElementById('tetrisCanvas');
+        const ctx = canvas.getContext('2d');
+        const nextCanvas = document.getElementById('nextCanvas');
+        const nextCtx = nextCanvas.getContext('2d');
+
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const levelDisplay = document.getElementById('levelDisplay');
+        const linesDisplay = document.getElementById('linesDisplay');
+        
+        const overlayScreen = document.getElementById('overlayScreen');
+        const startState = document.getElementById('startState');
+        const pauseState = document.getElementById('pauseState');
+        const gameOverState = document.getElementById('gameOverState');
+        
+        const btnStartGame = document.getElementById('btnStartGame');
+        const btnRestartGame = document.getElementById('btnRestartGame');
+        const btnPauseGame = document.getElementById('btnPauseGame');
+        const btnResumeGame = document.getElementById('btnResumeGame');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const pauseText = document.getElementById('pauseText');
+        const btnSkillNuke = document.getElementById('btnSkillNuke');
+
+        let board = createBoard();
+        let score = 0;
+        let lines = 0;
+        let level = 1;
+        let gameOver = false;
+        let isPlaying = false;
+        let isPaused = false;
+        let freezeTimer = 0;
+
+        let piece = null;
+        let nextPiece = null;
+        let dropCounter = 0;
+        let dropInterval = 900;
+        let lastTime = 0;
+
+        function createBoard() {
+            return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+        }
+
+        // High Chance of Spawning Special Blocks (35% Chance!)
+        function getRandomPiece() {
+            const isSpecial = Math.random() < 0.35;
+            const randKey = isSpecial 
+                ? SPECIAL_KEYS[Math.floor(Math.random() * SPECIAL_KEYS.length)]
+                : SHAPE_KEYS[Math.floor(Math.random() * SHAPE_KEYS.length)];
+
+            const shape = SHAPES[randKey];
+            return {
+                matrix: shape.matrix.map(row => [...row]),
+                color: shape.color,
+                type: shape.type || 'NORMAL',
+                x: Math.floor(COLS / 2) - Math.ceil(shape.matrix[0].length / 2),
+                y: 0
+            };
+        }
+
+        // Render Realistic 3D Beveled Blocks with Inner Glow
+        function drawCell(context, x, y, color, isSpecial = null, size = BLOCK_SIZE) {
+            const px = x * size;
+            const py = y * size;
+
+            // Main Fill Gradient
+            const grad = context.createLinearGradient(px, py, px + size, py + size);
+            grad.addColorStop(0, color);
+            grad.addColorStop(1, adjustColor(color, -40));
+            context.fillStyle = grad;
+            context.fillRect(px, py, size, size);
+
+            // 3D Top-Left Bevel (Highlight)
+            context.fillStyle = 'rgba(255, 255, 255, 0.45)';
+            context.beginPath();
+            context.moveTo(px, py);
+            context.lineTo(px + size, py);
+            context.lineTo(px + size - 3, py + 3);
+            context.lineTo(px + 3, py + 3);
+            context.lineTo(px + 3, py + size - 3);
+            context.lineTo(px, py + size);
+            context.closePath();
+            context.fill();
+
+            // 3D Bottom-Right Bevel (Shadow)
+            context.fillStyle = 'rgba(0, 0, 0, 0.45)';
+            context.beginPath();
+            context.moveTo(px + size, py);
+            context.lineTo(px + size, py + size);
+            context.lineTo(px, py + size);
+            context.lineTo(px + 3, py + size - 3);
+            context.lineTo(px + size - 3, py + size - 3);
+            context.lineTo(px + size - 3, py + 3);
+            context.closePath();
+            context.fill();
+
+            // Special Icons overlay
+            if (isSpecial) {
+                context.fillStyle = '#ffffff';
+                context.font = `bold ${Math.floor(size * 0.55)}px FontAwesome, sans-serif`;
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+
+                let icon = '';
+                if (isSpecial === 'BOMB') icon = '💣';
+                else if (isSpecial === 'WEIGHT') icon = '⚓';
+                else if (isSpecial === 'LASER') icon = '⚡';
+                else if (isSpecial === 'FREEZE') icon = '❄️';
+
+                context.fillText(icon, px + size / 2, py + size / 2);
+            }
+        }
+
+        // Helper to darken color for 3D gradient
+        function adjustColor(hex, amt) {
+            let usePound = false;
+            if (hex[0] == "#") {
+                hex = hex.slice(1);
+                usePound = true;
+            }
+            let num = parseInt(hex, 16);
+            let r = (num >> 16) + amt;
+            if (r > 255) r = 255; else if (r < 0) r = 0;
+            let b = ((num >> 8) & 0x00FF) + amt;
+            if (b > 255) b = 255; else if (b < 0) b = 0;
+            let g = (num & 0x0000FF) + amt;
+            if (g > 255) g = 255; else if (g < 0) g = 0;
+            return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
+        }
+
+        function draw() {
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Grid lines
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 0.5;
+            for (let r = 0; r <= ROWS; r++) {
+                ctx.beginPath();
+                ctx.moveTo(0, r * BLOCK_SIZE);
+                ctx.lineTo(canvas.width, r * BLOCK_SIZE);
+                ctx.stroke();
+            }
+            for (let c = 0; c <= COLS; c++) {
+                ctx.beginPath();
+                ctx.moveTo(c * BLOCK_SIZE, 0);
+                ctx.lineTo(c * BLOCK_SIZE, canvas.height);
+                ctx.stroke();
+            }
+
+            // Board matrix
+            board.forEach((row, y) => {
+                row.forEach((val, x) => {
+                    if (val !== 0) {
+                        drawCell(ctx, x, y, val.color || val, val.type);
+                    }
+                });
+            });
+
+            // Current piece
+            if (piece) {
+                piece.matrix.forEach((row, y) => {
+                    row.forEach((val, x) => {
+                        if (val !== 0) {
+                            drawCell(ctx, piece.x + x, piece.y + y, piece.color, piece.type);
+                        }
+                    });
+                });
+            }
+
+            drawNextPiece();
+        }
+
+        function drawNextPiece() {
+            nextCtx.fillStyle = '#020617';
+            nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+
+            if (!nextPiece) return;
+
+            const matrix = nextPiece.matrix;
+            const size = 24;
+            const offsetX = (nextCanvas.width - matrix[0].length * size) / 2;
+            const offsetY = (nextCanvas.height - matrix.length * size) / 2;
+
+            matrix.forEach((row, y) => {
+                row.forEach((val, x) => {
+                    if (val !== 0) {
+                        drawCell(nextCtx, (offsetX / size) + x, (offsetY / size) + y, nextPiece.color, nextPiece.type, size);
+                    }
+                });
+            });
+        }
+
+        function collide(board, piece, offset = {x: 0, y: 0}) {
+            const m = piece.matrix;
+            for (let y = 0; y < m.length; ++y) {
+                for (let x = 0; x < m[y].length; ++x) {
+                    if (m[y][x] !== 0) {
+                        const newX = piece.x + x + offset.x;
+                        const newY = piece.y + y + offset.y;
+
+                        if (newX < 0 || newX >= COLS || newY >= ROWS) {
+                            return true;
+                        }
+                        if (board[newY] && board[newY][newX] !== 0) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        function merge(board, piece) {
+            audio.land();
+            piece.matrix.forEach((row, y) => {
+                row.forEach((val, x) => {
+                    if (val !== 0) {
+                        board[piece.y + y][piece.x + x] = {
+                            color: piece.color,
+                            type: piece.type
+                        };
+                    }
+                });
+            });
+
+            // Trigger Special Block Trigger Mechanics
+            if (piece.type === 'BOMB') {
+                audio.bomb();
+                const centerY = piece.y;
+                const centerX = piece.x;
+                for (let r = centerY - 1; r <= centerY + 1; r++) {
+                    for (let c = centerX - 1; c <= centerX + 1; c++) {
+                        if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
+                            board[r][c] = 0;
+                        }
+                    }
+                }
+            } else if (piece.type === 'LASER') {
+                audio.laserSound();
+                const centerY = piece.y;
+                const centerX = piece.x;
+                // Clear entire row and column
+                for (let c = 0; c < COLS; c++) board[centerY][c] = 0;
+                for (let r = 0; r < ROWS; r++) board[r][centerX] = 0;
+            } else if (piece.type === 'FREEZE') {
+                audio.freezeSound();
+                freezeTimer = 5000; // Freeze drop speed for 5s
+            }
+        }
+
+        function dropPiece() {
+            if (!piece || isPaused) return;
+            if (!collide(board, piece, { x: 0, y: 1 })) {
+                piece.y += 1;
+            } else {
+                merge(board, piece);
+                clearLines();
+                spawnPiece();
+            }
+            dropCounter = 0;
+        }
+
+        function hardDrop() {
+            if (!piece || isPaused) return;
+            while (!collide(board, piece, { x: 0, y: 1 })) {
+                piece.y += 1;
+            }
+            merge(board, piece);
+            clearLines();
+            spawnPiece();
+            dropCounter = 0;
+        }
+
+        function movePiece(dir) {
+            if (!piece || isPaused) return;
+            if (!collide(board, piece, { x: dir, y: 0 })) {
+                piece.x += dir;
+                audio.move();
+            }
+        }
+
+        function rotatePiece() {
+            if (!piece || isPaused) return;
+            audio.rotate();
+            const matrix = piece.matrix;
+            const N = matrix.length;
+            const rotated = matrix.map((row, i) =>
+                row.map((val, j) => matrix[N - 1 - j][i])
+            );
+            
+            const pos = piece.x;
+            let offset = 1;
+            piece.matrix = rotated;
+            
+            while (collide(board, piece)) {
+                piece.x += offset;
+                offset = -(offset + (offset > 0 ? 1 : -1));
+                if (offset > matrix[0].length) {
+                    piece.matrix = matrix;
+                    piece.x = pos;
+                    return;
+                }
+            }
+        }
+
+        function togglePause() {
+            if (!isPlaying || gameOver) return;
+
+            isPaused = !isPaused;
+            if (isPaused) {
+                audio.stopBGM();
+                pauseIcon.className = 'fa-solid fa-play';
+                pauseText.innerText = 'เล่นต่อ';
+                overlayScreen.classList.remove('hidden');
+                pauseState.classList.remove('hidden');
+            } else {
+                audio.startBGM();
+                pauseIcon.className = 'fa-solid fa-pause';
+                pauseText.innerText = 'พักเกม';
+                overlayScreen.classList.add('hidden');
+                pauseState.classList.add('hidden');
+                lastTime = performance.now();
+                requestAnimationFrame(update);
+            }
+        }
+
+        btnPauseGame.addEventListener('click', togglePause);
+        btnResumeGame.addEventListener('click', togglePause);
+
+        function clearLines() {
+            let linesCleared = 0;
+            
+            for (let y = ROWS - 1; y >= 0; y--) {
+                if (board[y].every(cell => cell !== 0)) {
+                    board.splice(y, 1);
+                    board.unshift(Array(COLS).fill(0));
+                    linesCleared++;
+                    y++;
+                }
+            }
+
+            if (linesCleared > 0) {
+                if (linesCleared >= 3) {
+                    audio.victory();
+                } else {
+                    audio.clear();
+                }
+                
+                lines += linesCleared;
+                score += linesCleared * 120 * level;
+                level = Math.floor(lines / 5) + 1;
+
+                scoreDisplay.innerText = score;
+                levelDisplay.innerText = level;
+                linesDisplay.innerText = lines;
+            }
+        }
+
+        function spawnPiece() {
+            piece = nextPiece || getRandomPiece();
+            nextPiece = getRandomPiece();
+
+            piece.y = 0;
+            piece.x = Math.floor(COLS / 2) - Math.ceil(piece.matrix[0].length / 2);
+
+            if (collide(board, piece)) {
+                triggerGameOver();
+            }
+        }
+
+        // Skill: Nuke 3 bottom rows
+        btnSkillNuke.addEventListener('click', () => {
+            if (!isPlaying || isPaused || gameOver || score < 500) return;
+            score -= 500;
+            scoreDisplay.innerText = score;
+            audio.bomb();
+
+            for (let r = ROWS - 3; r < ROWS; r++) {
+                board[r] = Array(COLS).fill(0);
+            }
+        });
+
+        function update(time = 0) {
+            if (!isPlaying || isPaused) return;
+
+            const deltaTime = time - lastTime;
+            lastTime = time;
+
+            if (freezeTimer > 0) {
+                freezeTimer -= deltaTime;
+            }
+
+            // Calculate drop speed according to Level & Freeze state
+            const currentDropInterval = freezeTimer > 0 
+                ? 1200 
+                : Math.max(120, dropInterval - (level - 1) * 90);
+
+            dropCounter += deltaTime;
+            if (dropCounter > currentDropInterval) {
+                dropPiece();
+            }
+
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function startGame() {
+            board = createBoard();
+            score = 0;
+            lines = 0;
+            level = 1;
+            freezeTimer = 0;
+            gameOver = false;
+            isPlaying = true;
+            isPaused = false;
+
+            scoreDisplay.innerText = '0';
+            levelDisplay.innerText = '1';
+            linesDisplay.innerText = '0';
+
+            pauseIcon.className = 'fa-solid fa-pause';
+            pauseText.innerText = 'พักเกม';
+
+            overlayScreen.classList.add('hidden');
+            startState.classList.add('hidden');
+            pauseState.classList.add('hidden');
+            gameOverState.classList.add('hidden');
+
+            audio.startBGM();
+            spawnPiece();
+            lastTime = performance.now();
+            requestAnimationFrame(update);
+        }
+
+        function triggerGameOver() {
+            isPlaying = false;
+            gameOver = true;
+            audio.gameOver();
+
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('finalLines').innerText = lines;
+
+            overlayScreen.classList.remove('hidden');
+            gameOverState.classList.remove('hidden');
+        }
+
+        // Controls
+        document.addEventListener('keydown', event => {
+            if (event.key.toLowerCase() === 'p' || event.key === 'Escape') {
+                togglePause();
+                return;
+            }
+
+            if (!isPlaying || isPaused) return;
+
+            if (event.key === 'ArrowLeft') {
+                movePiece(-1);
+            } else if (event.key === 'ArrowRight') {
+                movePiece(1);
+            } else if (event.key === 'ArrowDown') {
+                dropPiece();
+            } else if (event.key === 'ArrowUp' || event.key.toLowerCase() === 'z') {
+                rotatePiece();
+            } else if (event.key === ' ') {
+                event.preventDefault();
+                hardDrop();
+            }
+        });
+
+        document.getElementById('btnMobileLeft').addEventListener('click', () => movePiece(-1));
+        document.getElementById('btnMobileRight').addEventListener('click', () => movePiece(1));
+        document.getElementById('btnMobileRotate').addEventListener('click', () => rotatePiece());
+        document.getElementById('btnMobileDrop').addEventListener('click', () => hardDrop());
+
+        btnStartGame.addEventListener('click', startGame);
+        btnRestartGame.addEventListener('click', startGame);
+
+        // --- Community Feedback Store & Tabs Logic ---
+        let initialReviews = [
+            { name: "GamerPro_99", rating: 5, likes: "เสียงบีทเรโทร fast-bpm ตื่นเต้นมาก บล็อกเลเซอร์ยิงล้างทั้งแถวสะใจสุดๆ!", improvements: "อยากให้มีด่านสเปเชียลเพิ่มอีก" },
+            { name: "TetrisMaster_TH", rating: 5, likes: "ภาพบล็อก 3D นูนมีน้ำหนักสวยงามแน่นตา ลุ้นบล็อกแช่แข็งออกบ่อย เล่นติดเลย", improvements: "ปรับระดับความเร็วอีกนิดจะท้าทายมาก" },
+            { name: "CosmicCleaner", rating: 5, likes: "เสียงเอฟเฟกต์ตอนกดทิ้งบล็อกกับเคลียร์แถวตื่นเต้นมากครับ ชวนให้อยากเล่นต่อเรื่อยๆ", improvements: "ทำได้ดีมากแล้วครับ" }
+        ];
+
+        const modalGdd = document.getElementById('modalGdd');
+        const modalFeedback = document.getElementById('modalFeedback');
+        const tabBtnForm = document.getElementById('tabBtnForm');
+        const tabBtnCommunity = document.getElementById('tabBtnCommunity');
+        const feedbackForm = document.getElementById('feedbackForm');
+        const communityView = document.getElementById('communityView');
+        const reviewsList = document.getElementById('reviewsList');
+
+        document.getElementById('btnGddModal').addEventListener('click', () => modalGdd.classList.remove('hidden'));
+        document.getElementById('btnCloseGdd').addEventListener('click', () => modalGdd.classList.add('hidden'));
+        document.getElementById('btnCloseGdd2').addEventListener('click', () => modalGdd.classList.add('hidden'));
+
+        document.getElementById('btnFeedbackModal').addEventListener('click', () => {
+            modalFeedback.classList.remove('hidden');
+            renderReviews();
+        });
+        document.getElementById('btnCloseFeedback').addEventListener('click', () => modalFeedback.classList.add('hidden'));
+
+        // Tab Switching
+        tabBtnForm.addEventListener('click', () => {
+            tabBtnForm.className = "px-4 py-2 rounded-xl text-sm font-bold bg-pink-600 text-white transition";
+            tabBtnCommunity.className = "px-4 py-2 rounded-xl text-sm font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+            feedbackForm.classList.remove('hidden');
+            communityView.classList.add('hidden');
+        });
+
+        tabBtnCommunity.addEventListener('click', () => {
+            tabBtnCommunity.className = "px-4 py-2 rounded-xl text-sm font-bold bg-pink-600 text-white transition";
+            tabBtnForm.className = "px-4 py-2 rounded-xl text-sm font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+            communityView.classList.remove('hidden');
+            feedbackForm.classList.add('hidden');
+            renderReviews();
+        });
+
+        // Rating Stars Logic
+        let selectedRating = 0;
+        const stars = document.querySelectorAll('#ratingStars i');
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                selectedRating = parseInt(star.getAttribute('data-rating'));
+                stars.forEach((s, idx) => {
+                    if (idx < selectedRating) {
+                        s.classList.remove('text-slate-600');
+                        s.classList.add('text-amber-400');
+                    } else {
+                        s.classList.remove('text-amber-400');
+                        s.classList.add('text-slate-600');
+                    }
+                });
+            });
+        });
+
+        // Submit Feedback
+        feedbackForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('reviewerName').value;
+            const likes = document.getElementById('qLikes').value;
+            const improvements = document.getElementById('qImprovements').value;
+
+            if (selectedRating === 0) {
+                alert('กรุณาคลิกเลือกดาวเพื่อประเมินความพึงพอใจด้วยครับ');
+                return;
+            }
+
+            // Save review
+            initialReviews.unshift({
+                name: name || "Anonymous Player",
+                rating: selectedRating,
+                likes: likes,
+                improvements: improvements || "-"
+            });
+
+            // Switch to community tab automatically
+            tabBtnCommunity.click();
+            feedbackForm.reset();
+            selectedRating = 0;
+            stars.forEach(s => {
+                s.classList.remove('text-amber-400');
+                s.classList.add('text-slate-600');
+            });
+        });
+
+        // Render Community Reviews
+        function renderReviews() {
+            reviewsList.innerHTML = '';
+            let sumRating = 0;
+
+            initialReviews.forEach(rev => {
+                sumRating += rev.rating;
+                
+                let starsHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= rev.rating) {
+                        starsHTML += `<i class="fa-solid fa-star text-amber-400"></i>`;
+                    } else {
+                        starsHTML += `<i class="fa-regular fa-star text-slate-600"></i>`;
+                    }
+                }
+
+                const card = document.createElement('div');
+                card.className = "p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-cyan-300"><i class="fa-solid fa-user-astronaut mr-1 text-xs"></i> ${rev.name}</span>
+                        <div class="text-xs space-x-0.5">${starsHTML}</div>
+                    </div>
+                    <p class="text-xs text-slate-300"><b>ชอบ:</b> ${rev.likes}</p>
+                    ${rev.improvements !== '-' ? `<p class="text-xs text-slate-400"><b>เสนอแนะ:</b> ${rev.improvements}</p>` : ''}
+                `;
+                reviewsList.appendChild(card);
+            });
+
+            const avg = (sumRating / initialReviews.length).toFixed(1);
+            document.getElementById('avgRatingNum').innerText = avg;
+            document.getElementById('totalReviewsCount').innerText = `${initialReviews.length} คน`;
+            document.getElementById('reviewCount').innerText = initialReviews.length;
+        }
+
+        // Initial Draw
+        draw();
+    </script>
+</body>
+</html>
